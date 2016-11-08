@@ -44,8 +44,6 @@ program
 
 const options = program; // To not have to refactor options to program
 
-console.log(options);
-
 // Set custom geth options based on options
 config.autoMine = (options.off) ? false : config.autoMine;
 config.path = options.datadir ? path.join(process.cwd(), options.datadir) : path.join(process.cwd(), config.path);
