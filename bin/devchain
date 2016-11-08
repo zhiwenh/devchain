@@ -1,0 +1,121 @@
+#!/usr/bin/env node
+'use strict';
+const program = require('commander');
+const path = require('path');
+const fs = require('fs-extra');
+const pathExists = require('path-exists').sync;
+const spawn = require('child_process').spawn;
+const spawnSync = require('child_process').spawnSync;
+
+/** Default devchain options */
+const config = {
+  path: './devchain/', // Relative path to devchain data
+  autoMine: true, // Auto mining status
+  accountAmount: 3, // Number of accounts to create
+  password: '', // Password to create accounts with
+  minAmount: 50, // Ether amount to keep coinbank topped off at
+  distributeAmount: 10, // Ether amount to distribute to all accounts
+
+  /** geth server start options */
+  identity: 'devchain', // RPC identity name
+  rpcaddr: 'localhost', // RPC host
+  rpcport: 8545, // RPC port
+  port: 30303, // Geth p2p network listening port
+  verbosity: 3,
+  rpccorsdomain: '*',
+  staticNodes: [] // Geth enode addresses to connect with
+}
+
+program
+  .version('0.0.1')
+  .option('-r --reset', 'Reset blockchain data')
+  .option('--off', 'Turn off auto mine.')
+  .option('--accounts <amount>', 'Number of accounts to initially create')
+  .option('--password <value>', 'Password to give and unlock the accounts created')
+  .option('--staticnodes <enodes>..<enodes>', 'Comma seperated list of static nodes to connect with. Creates the static-nodes.json file only for new blockchains')
+  .option('--identity <value>', 'Geth node identity name. Default is "devchain"')
+  .option('--datadir <path>', 'Relative path to blockchain data')
+  .option('--port <number>', 'Geth server network p2p port. Default is 30303')
+  .option('--rpchost <value>', 'Geth server HTTP-RPC host. Default is localhost')
+  .option('--rpcport <number>', 'Geth server HTTP-RPC port. Default is 8545')
+  .option('--verbosity <number>', 'Logging verbosity: 0=silent, 1=error, 2=warn, 3=info, 4=core, 5=debug, 6=detail. Default is 3')
+  .option('--rpccorsdomain <value>', 'Comma separated list of domains from which to accept cross origin requests. Default is *')
+  .parse(process.argv);
+
+const options = program; // To not have to refactor options to program
+
+console.log(options);
+
+// Set custom geth options based on options
+config.autoMine = (options.off) ? false : config.autoMine;
+config.path = options.datadir ? path.join(process.cwd(), options.datadir) : path.join(process.cwd(), config.path);
+config.accountAmount = options.accounts || config.accountAmount;
+config.password = options.password || config.password;
+if (options.staticnodes) {
+  config.staticNodes = config.staticNodes.concat(options.staticnodes);
+}
+
+/** Check to see if a blockchain reset is needed */
+if (pathExists(config.path) && options.reset) {
+  fs.removeSync(config.path);
+  gethInit();
+} else if (!pathExists(path.join(config.path, 'chaindata'))) {
+  options.reset = true;
+  gethInit();
+} else {
+  gethStart();
+}
+
+/** Initalizes the blockchain */
+function gethInit() {
+  config.reset = true;
+  // Looks for the genesis file where command was called, or one directory above the blockchain data if --datadir is specified.
+  let genesisPath = options.datadir ?  path.join(process.cwd(), options.datadir, '..', 'devgenesis.json') : path.join(process.cwd(), 'devgenesis.json');
+
+  // Only reset or create devchain folder if there's a genesis file avaliable
+  if (pathExists(genesisPath)) {
+    const initArgs = [
+      '--datadir', config.path,
+      'init', genesisPath
+    ];
+    spawnSync('geth', initArgs, { stdio: 'inherit' });
+    gethStart();
+  } else {
+    const genesisFile = fs.readFileSync(path.join(__dirname, '/../src/devchain/devgenesis.json'));
+    fs.writeFileSync(genesisPath, genesisFile);
+    console.log('Created devchain genesis file at', genesisPath);
+    console.log('Call commmand again to start the blockchain using the genesis file');
+  }
+}
+
+/** Start the geth server */
+function gethStart() {
+  // Add the config object to the preload script
+  const configString = 'var CONFIG = ' + JSON.stringify(config, 2) + '; \n';
+  const preloadFile = fs.readFileSync(path.join(__dirname, './../src/devchain/preload.js'));
+  const pathToBuiltPreload = path.join(__dirname, './../src/devchain/devchain.js');
+  fs.writeFileSync(pathToBuiltPreload, configString);
+  fs.appendFileSync(pathToBuiltPreload, preloadFile);
+
+  // Add the static-nodes.json file to chain folder if the config file contains enodes
+  if (config.staticNodes.length > 0) {
+    const staticNodesString = JSON.stringify(config.staticNodes);
+    fs.writeFileSync(path.join(config.path, 'static-nodes.json'), staticNodesString);
+  }
+
+  // Start the development chain
+  const startArgs = [
+    '--identity', options.identity || config.identity,
+    '--datadir', options.datadir || config.path,
+    '--port', options.port || config.port,
+    '--rpcaddr', options.rpchost || config.rpcaddr,
+    '--rpcport', options.rpcport || config.rpcport,
+    '--verbosity', options.verbosity || config.verbosity,
+    '--rpccorsdomain', options.rpccorsdomain || config.rpccorsdomain,
+    '--rpc',
+    '--nodiscover',
+    '--preload', path.join(__dirname, './../src/devchain/devchain.js'),
+    'console',
+  ];
+  spawn('geth', startArgs, { stdio: 'inherit'});
+}
