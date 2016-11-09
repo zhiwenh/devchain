@@ -1,4 +1,4 @@
-var CONFIG = {"path":"/Users/zhiwen/Development/devchain/test/devchain/","autoMine":true,"accountAmount":"3","password":"123","minAmount":50,"distributeAmount":10,"identity":"devchain","rpcaddr":"localhost","rpcport":8545,"port":30303,"verbosity":3,"rpccorsdomain":"*","staticNodes":[],"reset":true}; 
+var CONFIG = {"autoMine":true,"accountAmount":3,"password":"","minAmount":50,"distributeAmount":10,"identity":"hi","rpcaddr":"localhost","rpcport":"8000","port":"30302","verbosity":"3","rpccorsdomain":"*","staticNodes":["e"],"reset":true,"path":"/Users/zhiwen/Development/devchain/test/test2/devchain"}; 
 /* global web3, CONFIG */
 
 /** The global dev methods */
