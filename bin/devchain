@@ -27,7 +27,7 @@ const defaultConfig = {
 };
 
 program
-  .version('0.1.0')
+  .version('0.1.1')
   .option('-r --reset', 'Reset blockchain data')
   .option('--off', 'Turn off auto mine.')
   .option('--accounts <amount>', 'Number of accounts to initially create')
