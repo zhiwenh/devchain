@@ -2,9 +2,9 @@
 
 Private Ethereum blockchain creator and development geth server
 
-With **devchain** you can easily create your own private Ethereum blockchain. It abstracts away the setup needed, and you can create multiple private blockchains in seconds!
+With **devchain** you can easily create your own private Ethereum blockchain and private networks. The setup needed is abstracted away, and you can create multiple private blockchains in seconds! It's great for development because you can adjust the mining difficulty and keep your blockchain state over multiple sessions.
 
-Additionally, a Javascript file is preloaded into geth that comes with a ton of addons to help with your development. It automates creating accounts, distributing Ether to your accounts, and auto mining for transactions. It also displays transaction info and contains an object (`dev`) containing useful helper methods.
+Additionally, a Javascript file is preloaded into geth that comes with a ton of useful addons. It automates creating accounts, distributing Ether to your accounts, and auto mining for transactions. It also displays transaction info and contains an object (`dev`) containing helper methods such as distributing Ether from 1 account to all others.
 
 ## Install
 You must [install geth](https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum). Here are the Mac OSX install commands with brew:
@@ -22,17 +22,44 @@ npm install -g devchain
 
 ## Usage
 
+### Initialize
 In your terminal type:
 
 ```
 -> devchain
 ```
+The first time you type in the command it will initialize devchain.
 
-This will create a folder called `devchain/` that contains the blockchain data, the blockchain's genesis file called `devgenesis.json`, and an optional config file called `devconfig.js`. The genesis file `devgenesis.json` contains the data for the blockchain's first block. Its most useful property is the mining difficulty, which determines how fast mining new blocks will be. Go [here](http://ethereum.stackexchange.com/questions/2376/what-does-each-genesis-json-parameter-mean) to learn more about it. The file `devconfig.js` allows you to adjust the options of the geth preload script and server. It's optional and can be overwritten with command line options.  
+This will create, in your current directory, a folder called `devchain/`, a file called `devgenesis.json`, and a file called `devconfig.js`. The folder will contain your Ethereum blockchain data such as blocks and accounts. The file `devgenesis.json` is your blockchain's genesis file, which contains the data for the blockchain's first block. [Click here](http://ethereum.stackexchange.com/questions/2376/what-does-each-genesis-json-parameter-mean) to learn more about it.
 
-Adjust `devgenesis.json` and `devconfig.js` as needed then call the command again to initialize the blockchain and start up the geth server.
+The genesis file's most important property that you will be adjusting is the "difficulty". The difficulty refers to how fast new blocks will be mined. You can set a low difficulty for development purposes or a high difficulty to mimic actual production.
 
-By default the geth server will create 3 accounts and automatically start mining. 10 Ether will be distributed from your coinbase (first account created) to all other accounts after 30 Ether is reached. It will then mine 50 Ether and wait for pending transactions before mining again, or to keep the coinbase topped off.
+The file `devconfig.js` lets you adjust the options of the geth preload script and the geth server options. It lets you adjust your auto mining status, RPC connection, and network p2p port. This file is optional, and the default options are shown below.
+
+```
+{
+  /** Preload script options */
+  autoMine: true, // Auto mining status
+  accountAmount: 3, // Number of accounts to create
+  password: '', // Password to create accounts with
+  minAmount: 50, // Ether amount to keep coinbank topped off at
+  distributeAmount: 10, // Ether amount to distribute to all accounts
+
+  /** Custom geth node start options */
+  rpcaddr: 'localhost', // RPC host
+  rpcport: 8545, // RPC port
+  port: 30303, // P2P network listening port
+  networkid: 1, // Network identifier. To connect with other nodes
+  staticNodes: [] // Geth enode addresses to connect with
+}
+```
+
+Adjust `devgenesis.json` and `devconfig.js` as needed.
+
+### Start
+Call the devchain command again to initialize the blockchain and start up the geth server.
+
+By default the geth server will create 3 accounts and automatically start mining. 10 Ether will be distributed from your coinbase (first account created) to all other accounts after 31 Ether is reached. It will then mine 50 Ether and wait for pending transactions before mining again, or to keep the coinbase topped off.
 
 In the console you're given access to an object called `dev`. The methods are shown below. These methods are also shown upon starting up the geth server or by typing `dev.help()`.
 
@@ -47,38 +74,58 @@ In the console you're given access to an object called `dev`. The methods are sh
    * **.mine(blockAmount)** - *Mine a certain amount of blocks -- blockAmount defaults to 1*
    * **.block(blockNumber)** - *Display block information -- blockNumber defaults to latest*
    * **.coinbase(accountIndex)** - *Change coinbase*
+   * **.mute()** - *Toggles transaction receipt display*
    * **.help()** - *Display delib methods*
 
-## Options
+### Reset
+To reset your blockchain data and accounts type:
 
+```
+-> devchain --reset
+```
+
+This will create a new `devchain/` folder and if the `devgenesis.json` exists in the current directory it will start up a new blockchain.
+
+### Connecting with other blockchains
+To connect with other blockchains you will need the geth enode addresses you wish to connect with. The other blockchains will need to have the same genesis file and network id as you.
+
+You can pass in static nodes as a command option or you can add them into the `devconfig.js` staticNodes property. It creates a `static-nodes.json` file inside your blockchain folder. [Click here](https://github.com/ethereum/go-ethereum/wiki/Connecting-to-the-network) to learn more about connecting to peers and static nodes.
+
+```
+-> delib devchain --staticnodes enode://pubkey1@ip:port, enode://pubkey2@ip:port --networkid 1000
+```
+
+You can have multiple blockchains synced on your computer by configuring them with an unique RPC port and network p2p port.
+
+## Options
 The `devchain` command has the following options:
 
-**delib devchain `--reset --off --accounts <amount> --password <value> --staticnodes <enodes>..<enodes> --identity <value> --datadir <path> --port <number> --rpchost <value> --rpcport <number> --verbosity <number> --rpccorsdomain <value>`**
+**delib devchain `-r --reset --off --accounts <amount> --password <value> --datadir <path> --rpchost <value> --rpcport <number> --port <number> --networkid <number> --staticnodes <enodes>..<enodes>`**
 
 | Options | Type | Description |
 | --- | --- | --- |
-| `--reset` | `-- `| Reset blockchain data |
+| `-r --reset` | `-- `| Reset blockchain data |
 | `--off` | `--`  | Turn off auto mine |
 | `--accounts` | `<amount>` | Number of accounts to initially create |
 | `--password` | `<value>` |  Password to give and unlock the accounts created |
-| `--staticnodes` | `<enodes>..<enodes>` | Comma seperated list of static nodes to connect with. This will create a static-nodes.json file within your blockchain's data directory |
-| `--identity ` | `<value>` | Geth node identity name. Default is "dev" |
 | `--datadir` | `<path>` | Relative path to blockchain data |
-| `--port` | `<number>` | Geth server network p2p port. Default is 30303 |
 | `--rpchost` | `<value>` | Geth server HTTP-RPC host. Default is 'localhost' |
 | `--rpcport` | `<number>` | Geth server HTTP-RPC port. Default is 8545 |
-| `--verbosity` | `<number>`  | Logging verbosity: 0=silent, 1=error, 2=warn, 3=info, 4=core, 5=debug, 6=detail. Default is 3 |
-| `--rpccorsdomain` | `<value>` | Comma separated list of domains from which to accept cross origin requests. Default is * |
+| `--port` | `<number>` | Geth server network p2p port. Default is 30303 |
+| `--networkid` | `<number>` | Geth network identifier. To connect with other nodes. Default is 1 |
+| `--staticnodes` | `<enodes>..<enodes>` | Comma seperated list of static nodes to connect with. This will create a static-nodes.json file within your blockchain's data directory |
 
+You can pass in geth options that aren't listed above and you can set them within `devconfig.js` as additional properties. To do this set the key as the option name and the value as the value. If your desired option doesn't require a value, set it as true. An example is shown below:
+
+```
+{
+  ipcdisable: true,
+  ipcapi: 'admin, eth, personal, web3',
+  fast: true
+}
+```
 
 ## Useful Options
-
-#### Reset blockchain data
-
-This deletes your accounts and blockchain data.
-```
--> delib devchain --reset
-```
 
 #### Turn off auto mining
 ```
@@ -110,14 +157,3 @@ Open up another private blockchain node
 ```
 -> delib devchain --datadir './relative/path/to/folder2/chaindata' --rpcport 8546 --port 30304
 ```
-
-<a name="network"></a>
-#### Connect with other private blockchains
-
-Get the geth enode addresses you wish to connect with and pass them in as an option when you call the `devchain` command.
-
-```
--> delib devchain --staticnodes enode://pubkey1@ip:port, enode://pubkey2@ip:port
-```
-
-If the other geth servers are running a blockchain with the same identity and genesis file as you, then syncing will begin. Your enode address is shown when you start up devchain. It will look like this: *enode://pubkey@ip:port*. You can have multiple blockchains synced on your computer by configuring them with an unique RPC port and network p2p port. By default these are 8545 and 30303 respectively.

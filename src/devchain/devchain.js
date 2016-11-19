@@ -1,8 +1,10 @@
-var CONFIG = {"autoMine":true,"accountAmount":3,"password":"","minAmount":50,"distributeAmount":10,"identity":"hi","rpcaddr":"localhost","rpcport":"8000","port":"30302","verbosity":"3","rpccorsdomain":"*","staticNodes":["e"],"reset":true,"path":"/Users/zhiwen/Development/devchain/test/test2/devchain"}; 
+var CONFIG = {"autoMine":true,"accountAmount":3,"password":"bobobobob","minAmount":50,"distributeAmount":10,"rpcaddr":"localhost","rpcport":8545,"port":30303,"networkid":1,"staticNodes":[],"identity":"hello","ws":true,"reset":true,"path":"/Users/zhiwen/Development/devchain/test1/devchain"}; 
 /* global web3, CONFIG */
 
 /** The global dev methods */
 var dev = CONFIG; // CONFIG object gets built onto this file
+
+dev.isMute = false;
 
 /** Displays all accounts, balances, and indexes */
 dev.accounts = function() {
@@ -215,6 +217,22 @@ dev.log = function() {
   console.log.apply(this, args);
 };
 
+/** Toggles transaction receipt display status */
+dev.mute = function() {
+  this.isMute = this.isMute ? false : true;
+  if (this.isMute === true) {
+    console.log('');
+    this.log('Transaction receipts are muted');
+    console.log('');
+  } else {
+    console.log('');
+    this.log('Transaction receipts are unmuted');
+    console.log('');
+  }
+
+  return true;
+};
+
 /** Display dev methods */
 dev.help = function() {
   console.log('');
@@ -230,6 +248,7 @@ dev.help = function() {
   this.log(' .mine(blockAmount)', '                   Mine a specified number of blocks', '- blockAmount defaults to 1');
   this.log(' .block(blockNumber)', '                  Display block info', '- blockNumber defaults to latest');
   this.log(' .coinbase(accountIndex)', '              Change coinbase');
+  this.log(' .mute()', '                              Toggles transaction receipt display');
   this.log(' .help()', '                              Display devchain methods');
   console.log('');
   return true;
@@ -369,6 +388,8 @@ dev.help = function() {
   }
   // Display the transaction receipts
   function transactionReceipt(transactionHash) {
+    if (dev.isMute === true) return;
+
     var transactionObj = web3.eth.getTransactionReceipt(transactionHash);
     console.log('');
     dev.log('=== Transaction Receipt ===');

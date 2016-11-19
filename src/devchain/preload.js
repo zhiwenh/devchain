@@ -3,6 +3,8 @@
 /** The global dev methods */
 var dev = CONFIG; // CONFIG object gets built onto this file
 
+dev.isMute = false;
+
 /** Displays all accounts, balances, and indexes */
 dev.accounts = function() {
   console.log('');
@@ -214,6 +216,22 @@ dev.log = function() {
   console.log.apply(this, args);
 };
 
+/** Toggles transaction receipt display status */
+dev.mute = function() {
+  this.isMute = this.isMute ? false : true;
+  if (this.isMute === true) {
+    console.log('');
+    this.log('Transaction receipts are muted');
+    console.log('');
+  } else {
+    console.log('');
+    this.log('Transaction receipts are unmuted');
+    console.log('');
+  }
+
+  return true;
+};
+
 /** Display dev methods */
 dev.help = function() {
   console.log('');
@@ -229,6 +247,7 @@ dev.help = function() {
   this.log(' .mine(blockAmount)', '                   Mine a specified number of blocks', '- blockAmount defaults to 1');
   this.log(' .block(blockNumber)', '                  Display block info', '- blockNumber defaults to latest');
   this.log(' .coinbase(accountIndex)', '              Change coinbase');
+  this.log(' .mute()', '                              Toggles transaction receipt display');
   this.log(' .help()', '                              Display devchain methods');
   console.log('');
   return true;
@@ -368,6 +387,8 @@ dev.help = function() {
   }
   // Display the transaction receipts
   function transactionReceipt(transactionHash) {
+    if (dev.isMute === true) return;
+
     var transactionObj = web3.eth.getTransactionReceipt(transactionHash);
     console.log('');
     dev.log('=== Transaction Receipt ===');

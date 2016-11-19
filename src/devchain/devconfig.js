@@ -9,9 +9,9 @@ module.exports = {
   distributeAmount: 10, // Ether amount to distribute to all accounts
 
   /** Custom geth node start options */
-  identity: 'devchain', // RPC identity name
   rpcaddr: 'localhost', // RPC host
   rpcport: 8545, // RPC port
-  port: 30303, // Geth p2p network listening port
+  port: 30303, // P2P network listening port
+  networkid: 1, // Network identifier. To connect with other nodes
   staticNodes: [] // Geth enode addresses to connect with
-}
+};

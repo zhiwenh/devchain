@@ -6,25 +6,12 @@ const fs = require('fs-extra');
 const pathExists = require('path-exists').sync;
 const spawn = require('child_process').spawn;
 const spawnSync = require('child_process').spawnSync;
+const defaultConfig = require('./../src/devchain/devconfig');
+
+const extraArgs = require('./../src/cli/extraArgs');
+const createConfig = require('./../src/cli/createConfig');
 
 /** Default devchain options */
-let config = {};
-const defaultConfig = {
-  autoMine: true, // Auto mining status
-  accountAmount: 3, // Number of accounts to create
-  password: '', // Password to create accounts with
-  minAmount: 50, // Ether amount to keep coinbank topped off at
-  distributeAmount: 10, // Ether amount to distribute to all accounts
-
-  /** geth server start options */
-  identity: 'devchain', // RPC identity name
-  rpcaddr: 'localhost', // RPC host
-  rpcport: 8545, // RPC port
-  port: 30303, // Geth p2p network listening port
-  verbosity: 3,
-  rpccorsdomain: '*',
-  staticNodes: [] // Geth enode addresses to connect with
-};
 
 program
   .version('0.1.1')
@@ -32,16 +19,21 @@ program
   .option('--off', 'Turn off auto mine.')
   .option('--accounts <amount>', 'Number of accounts to initially create')
   .option('--password <value>', 'Password to give and unlock the accounts created')
-  .option('--staticnodes <enodes>..<enodes>', 'Comma seperated list of static nodes to connect with. Creates the static-nodes.json file only for new blockchains')
-  .option('--identity <value>', 'Geth node identity name. Default is "devchain"')
   .option('--datadir <path>', 'Relative path to blockchain data')
-  .option('--port <number>', 'Geth server network p2p port. Default is 30303')
-  .option('--rpchost <value>', 'Geth server HTTP-RPC host. Default is localhost')
-  .option('--rpcport <number>', 'Geth server HTTP-RPC port. Default is 8545')
-  .option('--verbosity <number>', 'Logging verbosity: 0=silent, 1=error, 2=warn, 3=info, 4=core, 5=debug, 6=detail. Default is 3')
-  .option('--rpccorsdomain <value>', 'Comma separated list of domains from which to accept cross origin requests. Default is *')
+  .option('--rpchost <value>', 'Geth HTTP-RPC host. Default is localhost')
+  .option('--rpcport <number>', 'Geth HTTP-RPC port. Default is 8545')
+  .option('--port <number>', 'Geth network p2p port. Default is 30303')
+  .option('--networkid <number>', 'Geth network identifier. To connect with other nodes. Default is 1')
+  .option('--staticnodes <enodes>..<enodes>', 'Comma seperated list of static nodes to connect with. Creates the static-nodes.json file only for new blockchains')
+  .allowUnknownOption(true)
   .parse(process.argv);
 
+const commandOptions = {};
+for (let i = 0; i < program.options.length; i++) {
+  let commandOption = program.options[i].long;
+  commandOption = commandOption.replace(/^--/, '');
+  commandOptions[commandOption] = true;
+}
 const options = program; // To not have to refactor options to program
 
 /** Path to blockchain data directory */
@@ -53,27 +45,11 @@ const configPath = path.join(blockchainPath, '..', 'devconfig.js');
 /** Path to devgenesis.json */
 const genesisPath = path.join(blockchainPath, '..', 'devgenesis.json');
 
-/** Check to see if devconfig.js is there to overwrite default config options */
-if (pathExists(configPath)) {
-  config = require(path.relative(__dirname, configPath));
-  config = Object.assign(defaultConfig, config);
-} else {
-  config = defaultConfig;
-}
+const config = createConfig(configPath, program);
 
-/** Set config based on options */
-config.autoMine = (options.off) ? false : config.autoMine;
-config.accountAmount = options.accounts || config.accountAmount;
-config.password = options.password || config.password;
-if (options.staticnodes) {
-  config.staticNodes = config.staticNodes.concat(options.staticnodes);
-}
-config.identity = options.identity || config.identity;
-config.rpcaddr = options.rpchost || config.rpcaddr;
-config.rpcport = options.rpcport || config.rpcport;
-config.port = options.port || config.port;
-config.verbosity = options.verbosity || config.verbosity;
+const args = extraArgs(process.argv, commandOptions, config);
 
+console.log('rawArgs', args);
 
 /** Check to see if a blockchain reset is needed */
 if (pathExists(blockchainPath) && options.reset) {
@@ -129,18 +105,19 @@ function gethStart() {
     fs.writeFileSync(path.join(blockchainPath, 'static-nodes.json'), staticNodesString);
   }
 
-  const startArgs = [
-    '--identity', config.identity,
+  let startArgs = [
     '--datadir', blockchainPath,
     '--port', config.port,
     '--rpcaddr', config.rpcaddr,
     '--rpcport', config.rpcport,
-    '--verbosity', config.verbosity,
-    '--rpccorsdomain', config.rpccorsdomain,
-    '--rpc',
-    '--nodiscover',
-    '--preload', path.join(__dirname, './../src/devchain/devchain.js'),
-    'console',
+    '--networkid', config.networkid,
+    '--preload', path.join(__dirname, './../src/devchain/devchain.js')
   ];
+  startArgs.push('--nodiscover');
+  startArgs.push('--rpc');
+  startArgs = startArgs.concat(args);
+  startArgs.push('console');
+
+  console.log('startArgs', startArgs);
   spawn('geth', startArgs, { stdio: 'inherit'});
 }
