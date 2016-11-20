@@ -14,26 +14,34 @@ const createConfig = require('./../src/cli/createConfig');
 /** Default devchain options */
 
 program
-  .version('0.1.1')
+  .version('1.0.0')
   .option('-r --reset', 'Reset blockchain data')
-  .option('--off', 'Turn off auto mine.')
-  .option('--accounts <amount>', 'Number of accounts to initially create')
-  .option('--password <value>', 'Password to give and unlock the accounts created')
-  .option('--datadir <path>', 'Relative path to blockchain data')
-  .option('--rpchost <value>', 'Geth HTTP-RPC host. Default is localhost')
+  .option('-o --off', 'Turn off auto mine.')
+  .option('-m --mute', 'Turn off transaction receipt display. ')
+  .option('-a --accounts <number>', 'Number of accounts to initially create. Default is 3')
+  .option('-t --distribute <number>', 'Ether amount to distribute to accounts initially. Default is 10')
+  .option('-p --password <value>', 'Password to give and unlock the accounts created. Default is ""')
+  .option('-d --datadir <path>', 'Relative path to blockchain data')
+  .option('--rpcaddr <value>', 'Geth HTTP-RPC host. Default is localhost')
   .option('--rpcport <number>', 'Geth HTTP-RPC port. Default is 8545')
   .option('--port <number>', 'Geth network p2p port. Default is 30303')
   .option('--networkid <number>', 'Geth network identifier. To connect with other nodes. Default is 1')
-  .option('--staticnodes <enodes>..<enodes>', 'Comma seperated list of static nodes to connect with. Creates the static-nodes.json file only for new blockchains')
+  .option('--rpcoff', 'Disable the geth RPC connection')
+  .option('--nodiscoveroff', 'Do not set the --nodiscover option for geth')
+  .option('-s --staticnodes <enodes>', 'Comma separated list with no spaces of static nodes to connect with. Creates the static-nodes.json file only for new blockchains')
   .allowUnknownOption(true)
   .parse(process.argv);
 
+/** Create object that contains command options as keys */
 const commandOptions = {};
 for (let i = 0; i < program.options.length; i++) {
-  let commandOption = program.options[i].long;
-  commandOption = commandOption.replace(/^--/, '');
-  commandOptions[commandOption] = true;
+  let long = program.options[i].long;
+  let short = program.options[i].short;
+  // commandOption = commandOption.replace(/^--/, '');
+  commandOptions[long] = true;
+  if (short) commandOptions[short] = true;
 }
+
 const options = program; // To not have to refactor options to program
 
 /** Path to blockchain data directory */
@@ -48,8 +56,6 @@ const genesisPath = path.join(blockchainPath, '..', 'devgenesis.json');
 const config = createConfig(configPath, program);
 
 const args = extraArgs(process.argv, commandOptions, config);
-
-console.log('rawArgs', args);
 
 /** Check to see if a blockchain reset is needed */
 if (pathExists(blockchainPath) && options.reset) {
@@ -73,6 +79,13 @@ function gethInit() {
       'init', genesisPath
     ];
     spawnSync('geth', initArgs, { stdio: 'inherit' });
+
+    // Add the static-nodes.json file to chain folder if the config file contains enodes
+    if (config.staticNodes.length > 0) {
+      const staticNodesString = JSON.stringify(config.staticNodes);
+      fs.writeFileSync(path.join(blockchainPath, 'static-nodes.json'), staticNodesString);
+    }
+
     gethStart();
   } else {
     const genesisFile = fs.readFileSync(path.join(__dirname, '/../src/devchain/devgenesis.json'));
@@ -99,12 +112,6 @@ function gethStart() {
   fs.writeFileSync(pathToBuiltPreload, configString);
   fs.appendFileSync(pathToBuiltPreload, preloadFile);
 
-  // Add the static-nodes.json file to chain folder if the config file contains enodes
-  if (config.staticNodes.length > 0) {
-    const staticNodesString = JSON.stringify(config.staticNodes);
-    fs.writeFileSync(path.join(blockchainPath, 'static-nodes.json'), staticNodesString);
-  }
-
   let startArgs = [
     '--datadir', blockchainPath,
     '--port', config.port,
@@ -113,11 +120,9 @@ function gethStart() {
     '--networkid', config.networkid,
     '--preload', path.join(__dirname, './../src/devchain/devchain.js')
   ];
-  startArgs.push('--nodiscover');
-  startArgs.push('--rpc');
+  if (!options.rpcoff) startArgs.push('--rpc');
+  if (!options.nodiscoveroff) startArgs.push('--nodiscover');
   startArgs = startArgs.concat(args);
   startArgs.push('console');
-
-  console.log('startArgs', startArgs);
   spawn('geth', startArgs, { stdio: 'inherit'});
 }

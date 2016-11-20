@@ -11,7 +11,6 @@ const defaultConfig = require('./../devchain/devconfig');
  */
 module.exports = (configPath, options) => {
   /** Check to see if devconfig.js is there to overwrite default config options */
-  // const defaultCopy = Object.assign({}, defaultConfig);
   let config = {};
   if (pathExists(configPath)) {
     config = require(path.relative(__dirname, configPath));
@@ -21,15 +20,19 @@ module.exports = (configPath, options) => {
   }
 
   /** Set config based on options */
-  config.autoMine = (options.off) ? false : config.autoMine;
+  config.autoMine = (options.off || config.autoMine === false) ? false : true;
   config.accountAmount = options.accounts || config.accountAmount;
   config.password = options.password || config.password;
-  config.rpcaddr = options.rpchost || config.rpcaddr;
+  config.distributeAmount = options.distribute || config.distributeAmount;
+  config.isMute = (options.isMute || config.isMute === true) ? true : false;
+  config.rpcaddr = options.rpcaddr || config.rpcaddr;
   config.rpcport = options.rpcport || config.rpcport;
   config.port = options.port || config.port;
   config.networkid = options.networkid || config.networkid;
 
   if (options.staticnodes) {
+    options.staticnodes = options.staticnodes.split(',')
+      .map(node => node.trim());
     config.staticNodes = config.staticNodes.concat(options.staticnodes);
   }
 

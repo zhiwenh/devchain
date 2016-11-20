@@ -3,8 +3,6 @@
 /** The global dev methods */
 var dev = CONFIG; // CONFIG object gets built onto this file
 
-dev.isMute = false;
-
 /** Displays all accounts, balances, and indexes */
 dev.accounts = function() {
   console.log('');
@@ -259,6 +257,8 @@ dev.help = function() {
 (function () {
   // Amount of Ether for coinbank to always have
   dev.minAmount;
+  // Transaction receipt display status
+  dev.isMute;
   // Amount of accounts to create. Always creates 1 account.
   var accountAmount = (dev.accountAmount > 0) ? dev.accountAmount : 1;
   accountAmount -= web3.eth.accounts.length; // Don't allow creation if accounts are already there
@@ -277,6 +277,9 @@ dev.help = function() {
 
   var transactions = []; // to contain pending transaction hashes of a block
   var pendingBlock; // to make sure transactions are only displayed after another block is mined
+  if (!dev.reset) {
+    addPeers(dev.staticNodes);
+  }
 
   console.log('');
   dev.log('=== Devchain Development Server ===');
@@ -426,4 +429,13 @@ dev.help = function() {
       isDistributed = true;
     }
   }
+
+  function addPeers(enodes) {
+    if (!Array.isArray(enodes)) return;
+    for (var i = 0; i < enodes.length; i++) {
+      console.log('enodes', enodes[i]);
+      web3.admin.addPeer(enodes[i]);
+    }
+  }
+
 })();
