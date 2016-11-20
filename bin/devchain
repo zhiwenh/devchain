@@ -14,7 +14,7 @@ const createConfig = require('./../src/cli/createConfig');
 /** Default devchain options */
 
 program
-  .version('1.0.1')
+  .version('1.1.1')
   .option('-r --reset', 'Reset blockchain data')
   .option('-o --off', 'Turn off auto mine.')
   .option('-m --mute', 'Turn off transaction receipt display. ')
