@@ -121,7 +121,7 @@ dev.transfer = function(fromIndex , toIndex, etherAmount) {
   };
   web3.eth.sendTransaction(object);
   console.log('');
-  this.log(etherAmount, 'Ether transfered to', web3.eth.accounts[fromIndex], 'from', web3.eth.accounts[toIndex]);
+  this.log(etherAmount, 'Ether transfered from', web3.eth.accounts[fromIndex], 'to', web3.eth.accounts[toIndex]);
   console.log('');
   this.mine(2);
   return true;
