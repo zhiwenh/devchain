@@ -14,23 +14,31 @@ const createConfig = require('./../src/cli/createConfig');
 /** Default devchain options */
 
 program
-  .version('1.1.2')
+  .version('1.2.0')
   .option('-r --reset', 'Reset blockchain data')
-  .option('-o --off', 'Turn off auto mine.')
-  .option('-m --mute', 'Turn off transaction receipt display. ')
+  .option('--off', 'Turn off auto mine.')
+  .option('--mute', 'Turn off transaction receipt display. ')
   .option('-a --accounts <number>', 'Number of accounts to initially create. Default is 3')
   .option('-t --distribute <number>', 'Ether amount to distribute to accounts initially. Default is 10')
-  .option('-p --password <value>', 'Password to give and unlock the accounts created. Default is ""')
+  .option('-w --password <value>', 'Password to give and unlock the accounts created. Default is ""')
   .option('-d --datadir <path>', 'Relative path to blockchain data')
-  .option('--rpcaddr <value>', 'Geth HTTP-RPC host. Default is localhost')
-  .option('--rpcport <number>', 'Geth HTTP-RPC port. Default is 8545')
-  .option('--port <number>', 'Geth network p2p port. Default is 30303')
+  .option('-h --rpcaddr <value>', 'Geth HTTP-RPC addr. Default is localhost')
+  .option('-p --rpcport <number>', 'Geth HTTP-RPC port. Default is 8545')
+  .option('-n --port <number>', 'Geth network p2p port. Default is 30303')
   .option('--networkid <number>', 'Geth network identifier. To connect with other nodes. Default is 1')
   .option('--rpcoff', 'Disable the geth RPC connection')
   .option('--nodiscoveroff', 'Do not set the --nodiscover option for geth')
   .option('-s --staticnodes <enodes>', 'Comma separated list with no spaces of static nodes to connect with. Creates the static-nodes.json file only for new blockchains')
-  .allowUnknownOption(true)
-  .parse(process.argv);
+  .allowUnknownOption(true);
+
+program.on('--help', () => {
+  console.log('    You may also use any geth options');
+  console.log('');
+});
+
+program.parse(process.argv);
+
+
 
 /** Create object that contains command options as keys */
 const commandOptions = {};

@@ -115,6 +115,11 @@ The default ports opened:
 -> devchain --rpcport 8545 --port 30303
 ```
 
+Or with the shorthand options:
+```
+-> devchain -p 8545 -n 30303
+```
+
 You can specify a custom path to the blockchain data. Alternatively you can go to that directory to call the command.
 
 ```
@@ -125,26 +130,26 @@ You can specify a custom path to the blockchain data. Alternatively you can go t
 ## Options
 All command options will overwrite the `devconfig.js` options except `--staticnodes`, which gets added on instead.
 
-**devchain `-r --reset, -o --off, -m --mute, -a --accounts <number>, -t --distribute <number>, -p --password <value>, -d --datadir <path>, --rpcaddr <value>, --rpcport <number>, --port <number>, --networkid <number>, --rpcoff, --nodiscoveroff, -s --staticnodes <enodes>`**
+**devchain `-r --reset, --off, --mute, -a --accounts <number>, -t --distribute <number>, -w --password <value>, -d --datadir <path>, -h --rpcaddr <value>, -p --rpcport <number>, -n --port <number>, --networkid <number>, --rpcoff, --nodiscoveroff, -s --staticnodes <enodes>`**
 
 ```
-Options            Type         Description
+Options             Type          Description
 
--r --reset         --           Reset blockchain data
--o --off           --           Turn off auto mine
--m --mute          --           Turn off transaction receipt display
--a --accounts      <number>     Number of accounts to initially create. Default is 3
--t --distribute    <number>     Ether amount to distribute to accounts initially. Default is 10
--p --password      <value>      Password to give and unlock the accounts created. Default is ""
--d --datadir       <path>       Relative path to blockchain data
---rpcaddr          <value>      Geth server HTTP-RPC addr. Default is 'localhost'
---rpcport          <number>     Geth server HTTP-RPC port. Default is 8545
---port             <number>     Geth server network p2p port. Default is 30303
---networkid        <number>     Geth network identifier. To connect with other nodes. Default is 1
---rpcoff           --           Disable the Geth RPC connection. Don't set `--rpc` option for geth
---nodiscoveroff    --           Don't set `--nodiscover` option for geth
--s --staticnodes   <enodes>     Comma separated list with no spaces of static nodes to connect with.
-                                This will create a static-nodes.json file within your blockchain's data directory for new blockchains
+-r --reset           --           Reset blockchain data
+--off                --           Turn off auto mine
+--mute               --           Turn off transaction receipt display
+-a --accounts        <number>     Number of accounts to initially create. Default is 3
+-t --distribute      <number>     Ether amount to distribute to accounts initially. Default is 10
+-w --password        <value>      Password to give and unlock the accounts created. Default is ""
+-d --datadir         <path>       Relative path to blockchain data
+-h --rpcaddr         <value>      Geth server HTTP-RPC addr. Default is 'localhost'
+-p --rpcport         <number>     Geth server HTTP-RPC port. Default is 8545
+-n --port            <number>     Geth server network p2p port. Default is 30303
+--networkid          <number>     Geth network identifier. To connect with other nodes. Default is 1
+--rpcoff             --           Disable the Geth RPC connection. Don't set `--rpc` option for geth
+--nodiscoveroff      --           Don't set `--nodiscover` option for geth
+-s --staticnodes     <enodes>     Comma separated list with no spaces of static nodes to connect with.
+                                  This will create a static-nodes.json file within your blockchain's data directory for new blockchains
 ```
 
 You can pass in additional options that aren't listed for geth. You can also do this via `devconfig.js` as additional properties. The key will be the option name with the '--' removed. If your desired option doesn't require a value, set it as true. An example is shown below:
