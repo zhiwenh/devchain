@@ -8,6 +8,7 @@ module.exports = {
   password: '', // Password to create accounts with
   minAmount: 50, // Ether amount to keep coinbank topped off at
   distributeAmount: 10, // Ether amount to distribute to all accounts
+  blocks: 5, // Additional blocks to mine after auto mining a transaction
 
   /** Custom geth node start options */
   rpcaddr: 'localhost', // RPC address

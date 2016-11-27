@@ -24,6 +24,7 @@ module.exports = (configPath, options) => {
   config.accountAmount = options.accounts || config.accountAmount;
   config.password = options.password || config.password;
   config.distributeAmount = options.distribute || config.distributeAmount;
+  config.blocks = options.blocks || config.blocks;
   config.isMute = (options.isMute || config.isMute === true) ? true : false;
   config.rpcaddr = options.rpcaddr || config.rpcaddr;
   config.rpcport = options.rpcport || config.rpcport;

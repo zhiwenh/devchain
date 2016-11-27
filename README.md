@@ -45,6 +45,7 @@ The file `devconfig.js` lets you adjust the options of the geth preload script a
   password: '', // Password to create accounts with
   minAmount: 50, // Ether amount to keep coinbank topped off at
   distributeAmount: 10, // Ether amount to distribute to all accounts
+  blocks: 5, // Additional blocks to mine after auto mining a transaction
 
   /** Custom geth node start options */
   rpcaddr: 'localhost', // RPC host
@@ -130,7 +131,7 @@ You can specify a custom path to the blockchain data. Alternatively you can go t
 ## Options
 All command options will overwrite the `devconfig.js` options except `--staticnodes`, which gets added on instead.
 
-**devchain `-r --reset, --off, --mute, -a --accounts <number>, -t --distribute <number>, -w --password <value>, -d --datadir <path>, -h --rpcaddr <value>, -p --rpcport <number>, -n --port <number>, --networkid <number>, --rpcoff, --nodiscoveroff, -s --staticnodes <enodes>`**
+**devchain `-r --reset, --off, --mute, -a --accounts <number>, -t --distribute <number>, -w --password <value>, -b --blocks <number>, -d --datadir <path>, -h --rpcaddr <value>, -p --rpcport <number>, -n --port <number>, --networkid <number>, --rpcoff, --nodiscoveroff, -s --staticnodes <enodes>`**
 
 ```
 Options             Type          Description
@@ -141,6 +142,7 @@ Options             Type          Description
 -a --accounts        <number>     Number of accounts to initially create. Default is 3
 -t --distribute      <number>     Ether amount to distribute to accounts initially. Default is 10
 -w --password        <value>      Password to give and unlock the accounts created. Default is ""
+-b --blocks          <number>     Additional blocks to mine after auto mining a transaction
 -d --datadir         <path>       Relative path to blockchain data
 -h --rpcaddr         <value>      Geth server HTTP-RPC addr. Default is 'localhost'
 -p --rpcport         <number>     Geth server HTTP-RPC port. Default is 8545

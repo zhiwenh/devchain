@@ -255,8 +255,7 @@ dev.help = function() {
  * Run on devchain start
  */
 (function () {
-  // Amount of Ether for coinbank to always have
-  dev.minAmount;
+
   // Transaction receipt display status
   dev.isMute;
   // Amount of accounts to create. Always creates 1 account.
@@ -266,10 +265,12 @@ dev.help = function() {
   var distributeAmount = (dev.distributeAmount < 0) ? 0 : dev.distributeAmount;
   // Amount of Ether needed by coinbank
   var requiredEtherAmount = dev.distributeAmount * dev.accountAmount + 1;
+  // Amount of Ether for coinbank to always have
+  dev.minAmount = (dev.minAmount < requiredEtherAmount && dev.reset === true) ? requiredEtherAmount + 1 : dev.minAmount;
   // Status of toggling mining if there are transactions pending and whether to keep coinbank topped off at minAmount
   var password = dev.password; // password for the accounts created
   var blockNumber = web3.eth.blockNumber; // the block number to keep mining too
-
+  var blocks = (dev.blocks < 1) ? 1 : dev.blocks;
   // For the automatic Ether distribution
   var distributeBlock; // block number when distributed for reference
   var isBalanceDisplayed = false;
@@ -345,7 +346,7 @@ dev.help = function() {
       }
 
       if (web3.eth.getBlock('pending').transactions.length > 0) {
-        blockNumber = web3.eth.blockNumber + 3;
+        blockNumber = web3.eth.blockNumber + blocks;
         dev.start();
         return;
       }
@@ -427,6 +428,7 @@ dev.help = function() {
       }
       if (doesOneDistribute) console.log('');
       isDistributed = true;
+      dev.mine();
     }
   }
 

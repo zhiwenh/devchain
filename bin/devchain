@@ -21,6 +21,7 @@ program
   .option('-a --accounts <number>', 'Number of accounts to initially create. Default is 3')
   .option('-t --distribute <number>', 'Ether amount to distribute to accounts initially. Default is 10')
   .option('-w --password <value>', 'Password to give and unlock the accounts created. Default is ""')
+  .option('-b --blocks <number>', 'Additional blocks to mine after auto mining a transaction')
   .option('-d --datadir <path>', 'Relative path to blockchain data')
   .option('-h --rpcaddr <value>', 'Geth HTTP-RPC addr. Default is localhost')
   .option('-p --rpcport <number>', 'Geth HTTP-RPC port. Default is 8545')
@@ -61,7 +62,7 @@ const configPath = path.join(blockchainPath, '..', 'devconfig.js');
 /** Path to devgenesis.json */
 const genesisPath = path.join(blockchainPath, '..', 'devgenesis.json');
 
-const config = createConfig(configPath, program);
+const config = createConfig(configPath, options);
 
 const args = extraArgs(process.argv, commandOptions, config);
 
