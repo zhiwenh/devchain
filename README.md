@@ -2,17 +2,14 @@
 
 Private Ethereum blockchain creator and development geth server
 
-With **devchain** you can easily create your own private Ethereum blockchains and private networks. The setup needed is abstracted away, and you can create multiple private blockchains in seconds! It's great for development because you can adjust the mining difficulty and keep your blockchain state over multiple sessions.
+With **devchain** you can easily create your own private Ethereum blockchains and private networks. The setup needed is abstracted away, and you can create multiple private blockchains in seconds!
 
-Additionally, a Javascript file is preloaded into geth that comes with a ton of useful addons. It automates account creation, distributing Ether to your accounts, and auto mining for transactions. It also displays transaction info and contains an object (`dev`) containing helper methods such as distributing Ether from 1 account to all others.
+devchain is great for development because you can adjust mining difficulty and keep your blockchain state over multiple sessions,  Plus, since you're using a real geth node, production release on geth will be a breeze! You can also quickly set up your own private networks to test on.
+
+Additionally, a Javascript file is preloaded into geth that gives you a ton of useful features. It automates account creation, distributing Ether to your accounts, and mining for transactions. It also displays transaction info and contains an object (`dev`) containing helper methods such as showing account balances and transferring Ether between your accounts.
 
 ## Install
-You must [install geth](https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum). Here are the Mac OSX install commands with brew:
-
-```
-brew tap ethereum/ethereum
-brew install ethereum
-```
+You must [install geth](https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum) to use devchain.
 
 After that install devchain:
 
