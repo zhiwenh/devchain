@@ -1,6 +1,5 @@
-/** Config file for devchain. This file is not required to use devchain */
+/** Config file for npm devchain. This file is not required to use devchain */
 module.exports = {
-
   /** Preload script options */
   autoMine: true, // Set false to turn off auto mining
   isMute: false, // Set true to turn off transaction receipt display
