@@ -20,7 +20,7 @@
   "author": "Zhiwen Huang <zhiwen555@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "commander": "^2.9.0",
+    "commander": "2.9.0",
     "fs-extra": "^1.0.0",
     "path": "^0.12.7",
     "path-exists": "^3.0.0"
