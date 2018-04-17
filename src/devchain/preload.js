@@ -370,7 +370,7 @@ dev.help = function() {
     dev.log('Creating ' + accountAmount + ' accounts with password ' + '"' + password + '"');
     for (var i = 0; i < accountAmount; i++) {
       web3.personal.newAccount(password);
-      web3.personal.unlockAccount(web3.eth.accounts[web3.eth.accounts.length - 1], password, 10000000);
+      web3.personal.unlockAccount(web3.eth.accounts[web3.eth.accounts.length - 1], password, 18000);
       dev.log('.');
     }
   }
@@ -380,11 +380,11 @@ dev.help = function() {
     dev.log('Unlocking accounts');
     for (var i = 0; i < web3.eth.accounts.length; i++) {
       try {
-        web3.personal.unlockAccount(web3.eth.accounts[i], password, 10000000);
+        web3.personal.unlockAccount(web3.eth.accounts[i], password, 18000);
         dev.log('.');
       } catch (e) {
         dev.log('Unable to unlock account', i);
-        dev.log('Unlock with: web3.personal.unlockAccount(' + web3.eth.accounts[i] + ', \'yourpassword\', 100000)');
+        dev.log('Unlock with: web3.personal.unlockAccount(' + web3.eth.accounts[i] + ', \'yourpassword\', 18000)');
       }
     }
     console.log('.');

@@ -20,14 +20,14 @@ npm install -g devchain
 ## Usage
 
 ### Initialize
-In your terminal type:
+Go to the directory where you'll like devchain to be and in your terminal at type:
 
 ```
 -> devchain
 ```
 The first time you use the command it will initialize devchain.
 
-In your current directory this will create a folder called `devchain/`, a file called `devgenesis.json`, and a file called `devconfig.js`. The folder will contain your Ethereum blockchain data such as blocks and accounts. The file `devgenesis.json` is your blockchain's genesis file, which contains the data for the blockchain's first block. [Go here](http://ethereum.stackexchange.com/questions/2376/what-does-each-genesis-json-parameter-mean) to learn more about the genesis file.
+This will create a folder called `devchain/`, a file called `devgenesis.json`, and a file called `devconfig.js`. The folder will contain your Ethereum blockchain data such as blocks and accounts. The file `devgenesis.json` is your blockchain's genesis file, which contains the data for the blockchain's first block. [Go here](http://ethereum.stackexchange.com/questions/2376/what-does-each-genesis-json-parameter-mean) to learn more about the genesis file.
 
 The genesis file's most useful property is the "difficulty". The difficulty refers to how fast new blocks can be mined. You can set a low difficulty for development purposes or a high difficulty to mimic actual production.
 
