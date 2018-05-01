@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 'use strict';
+
 const program = require('commander');
 const path = require('path');
 const fs = require('fs-extra');
@@ -14,7 +15,7 @@ const createConfig = require('./../src/cli/createConfig');
 /** Default devchain options */
 
 program
-  .version('1.4.1')
+  .version('1.5.0')
   .option('-r --reset', 'Reset blockchain data')
   .option('--off', 'Turn off auto mine.')
   .option('--mute', 'Turn off transaction receipt display. ')
