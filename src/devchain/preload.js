@@ -275,6 +275,7 @@ dev.help = function() {
   var distributeBlock; // block number when distributed for reference
   var isBalanceDisplayed = false;
   var isDistributed = (distributeAmount === 0 || !dev.reset) ? true : false; // status of ether distribution
+  var isHasntDistributed;
 
   var transactions = []; // to contain pending transaction hashes of a block
   var pendingBlock; // to make sure transactions are only displayed after another block is mined
@@ -358,6 +359,10 @@ dev.help = function() {
 
       if (web3.eth.blockNumber > blockNumber) {
         dev.stop();
+        if (isHasntDistributed === true) {
+          isHasntDistributed = false;
+          dev.start();
+        }
         return;
       }
     }
@@ -428,7 +433,7 @@ dev.help = function() {
       }
       if (doesOneDistribute) console.log('');
       isDistributed = true;
-      dev.mine();
+      isHasntDistributed = true;
     }
   }
 
