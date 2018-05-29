@@ -160,3 +160,7 @@ You can pass in additional options that aren't listed for geth. You can also do 
   fast: true
 }
 ```
+
+## Support
+
+If you found devchain useful please leave a star on [GitHub](https://github.com/zhiwenhuang/devchain) or give feedback!
