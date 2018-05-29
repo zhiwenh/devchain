@@ -38,8 +38,8 @@ The file `devconfig.js` lets you adjust the options of the geth preload script a
   /** Preload script options */
   autoMine: true, // Set false to turn off auto mining
   isMute: false, // Set true to turn off transaction receipt display
-  accountAmount: 3, // Number of accounts to create
-  password: '', // Password to create accounts with
+  accountAmount: 5, // Number of accounts to create
+  password: ' ', // Password to create accounts with
   minAmount: 50, // Ether amount to keep coinbank topped off at
   distributeAmount: 10, // Ether amount to distribute to all accounts
   blocks: 5, // Additional blocks to mine after auto mining a transaction

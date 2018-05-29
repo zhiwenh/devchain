@@ -4,7 +4,7 @@ module.exports = {
   autoMine: true, // Set false to turn off auto mining
   isMute: false, // Set true to turn off transaction receipt display
   accountAmount: 5, // Number of accounts to create
-  password: '', // Password to create accounts with
+  password: ' ', // Password to create accounts with
   minAmount: 50, // Ether amount to keep coinbank topped off at
   distributeAmount: 10, // Ether amount to distribute to all accounts
   blocks: 5, // Additional blocks to mine after auto mining a transaction
